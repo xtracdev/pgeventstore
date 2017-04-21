@@ -144,5 +144,34 @@ func (pg *PGEventStore) writeEvents(agg *goes.Aggregate) error {
 }
 
 func (ps *PGEventStore) RetrieveEvents(aggID string) ([]goes.Event, error) {
-	return nil,errors.New("no can do")
+	var events []goes.Event
+
+	//Select the events, ordered by version
+	rows, err := ps.db.Query(`select version, typecode, payload from es.t_aeev_events where aggregate_id = $1 order by version`, aggID)
+	if err != nil {
+		return nil, err
+	}
+
+	defer rows.Close()
+
+	var version int
+	var typecode string
+	var payload []byte
+
+	for rows.Next() {
+		rows.Scan(&version, &typecode, &payload)
+		event := goes.Event{
+			Source:   aggID,
+			Version:  version,
+			TypeCode: typecode,
+			Payload:  payload,
+		}
+
+		events = append(events, event)
+
+	}
+
+	err = rows.Err()
+
+	return events, err
 }

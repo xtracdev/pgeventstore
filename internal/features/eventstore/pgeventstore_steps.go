@@ -8,14 +8,16 @@ import (
 	"github.com/xtracdev/pgconn"
 	"github.com/xtracdev/pgeventstore"
 	. "github.com/xtracdev/goes/sample/testagg"
+	"github.com/xtracdev/goes"
 )
 
 func init() {
 	var testAgg *TestAgg
-	//var anotherAgg *TestAgg
+	var anotherAgg *TestAgg
 
 	var eventStore *pgeventstore.PGEventStore
 	var concurrentMax *int
+	var events []goes.Event
 
 	Given(`^a new aggregate instance$`, func() {
 		if len(configErrors) != 0 {
@@ -73,6 +75,44 @@ func init() {
 		assert.Equal(T, pgeventstore.ErrConcurrency, err)
 	})
 
+	Given(`^a persisted aggregate$`, func() {
+		if len(configErrors) != 0 {
+			assert.Fail(T, strings.Join(configErrors, "\n"))
+			return
+		}
+
+		if eventStore == nil {
+			assert.Fail(T, "Can't connect to event store.. FAIL!")
+			return
+		}
+
+		var err error
+		log.Println("create an aggregate")
+		anotherAgg, err = NewTestAgg("foo2", "bar2", "baz2")
+		assert.Nil(T, err)
+		anotherAgg.UpdateFoo("new foo")
+		log.Println("persist aggregate")
+		err = anotherAgg.Store(eventStore)
+		if assert.Nil(T, err) {
+			log.Println("err was nil on store of aggregate")
+		}
+		assert.Equal(T, 0, len(anotherAgg.Events))
+	})
+
+	When(`^we retrieve the events for the aggregate$`, func() {
+		var err error
+		events, err = eventStore.RetrieveEvents(anotherAgg.AggregateID)
+		if assert.Nil(T, err) {
+			assert.Equal(T, 2, len(events))
+		}
+
+	})
+
+	Then(`^all the events for the aggregate are returned in order$`, func() {
+		assert.Equal(T, TestAggCreatedTypeCode, events[0].TypeCode)
+		assert.Equal(T, TestAggFooUpdateTypeCode, events[1].TypeCode)
+		assert.True(T, events[1].Version > events[0].Version)
+	})
 }
 
 

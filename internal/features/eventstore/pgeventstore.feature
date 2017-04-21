@@ -11,3 +11,8 @@ Feature: Event Store
     When we get the max version from the event store
     And the max version is greater than the aggregate version
     Then a concurrency error is return on aggregate store
+
+  Scenario:
+    Given a persisted aggregate
+    When we retrieve the events for the aggregate
+    Then all the events for the aggregate are returned in order
