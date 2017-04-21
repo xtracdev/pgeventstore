@@ -15,6 +15,7 @@ func init() {
 	//var anotherAgg *TestAgg
 
 	var eventStore *pgeventstore.PGEventStore
+	var concurrentMax *int
 
 	Given(`^a new aggregate instance$`, func() {
 		if len(configErrors) != 0 {
@@ -54,6 +55,22 @@ func init() {
 				assert.Equal(T, 0, *max)
 			}
 		}
+	})
+
+	When(`^we get the max version from the event store$`, func() {
+		var err error
+		concurrentMax, err = eventStore.GetMaxVersionForAggregate(testAgg.AggregateID)
+		assert.Nil(T, err)
+	})
+
+	And(`^the max version is greater than the aggregate version$`, func() {
+		testAgg.Version = *concurrentMax - 1
+	})
+
+	Then(`^a concurrency error is return on aggregate store$`, func() {
+		err := testAgg.Store(eventStore)
+		assert.NotNil(T, err)
+		assert.Equal(T, pgeventstore.ErrConcurrency, err)
 	})
 
 }
