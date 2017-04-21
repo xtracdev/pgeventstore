@@ -14,6 +14,8 @@ func init() {
 	var testAgg *TestAgg
 	//var anotherAgg *TestAgg
 
+	var eventStore *pgeventstore.PGEventStore
+
 	Given(`^a new aggregate instance$`, func() {
 		if len(configErrors) != 0 {
 			assert.Fail(T, strings.Join(configErrors, "\n"))
@@ -28,7 +30,7 @@ func init() {
 			return
 		}
 
-		eventStore,_ := pgeventstore.NewPGEventStore(pgdb.DB)
+		eventStore,_ = pgeventstore.NewPGEventStore(pgdb.DB)
 		if assert.NotNil(T, eventStore) {
 			var err error
 			testAgg, err = NewTestAgg("new foo", "new bar", "new baz")
@@ -39,11 +41,19 @@ func init() {
 	})
 
 	When(`^we check the max version in the event store$`, func() {
-		T.Skip() // pending
 	})
 
 	Then(`^the max version is (\d+)$`, func(i1 int) {
-		T.Skip() // pending
+		if eventStore != nil {
+			max, err := eventStore.GetMaxVersionForAggregate(testAgg.AggregateID)
+			if err != nil {
+				log.Infof("Error reading max version for agg: %s", err.Error())
+			}
+			assert.Nil(T, err)
+			if max != nil {
+				assert.Equal(T, 0, *max)
+			}
+		}
 	})
 
 }

@@ -32,3 +32,21 @@ func NewPGEventStore(db *sql.DB) (*PGEventStore, error) {
 		publish: publishEvents == "1",
 	}, nil
 }
+
+
+func (es *PGEventStore) GetMaxVersionForAggregate(aggId string) (*int, error) {
+	row, err := es.db.Query("select max(version) from es.t_aeev_events where aggregate_id = $1", aggId)
+	if err != nil {
+		return nil, err
+	}
+
+	var max int
+	row.Scan(&max)
+
+	err = row.Err()
+	if err != nil {
+		return nil, err
+	}
+
+	return &max, nil
+}
