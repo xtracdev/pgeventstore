@@ -16,3 +16,9 @@ Feature: Event Store
     Given a persisted aggregate
     When we retrieve the events for the aggregate
     Then all the events for the aggregate are returned in order
+
+  Scenario:
+    Given a persisted aggregate
+    When we retrieve the events for the aggregate
+    Then we can recrete the aggregate from the event history
+

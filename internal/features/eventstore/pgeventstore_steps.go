@@ -113,6 +113,15 @@ func init() {
 		assert.Equal(T, TestAggFooUpdateTypeCode, events[1].TypeCode)
 		assert.True(T, events[1].Version > events[0].Version)
 	})
+
+	Then(`^we can recrete the aggregate from the event history$`, func() {
+		restored := NewTestAggFromHistory(events)
+		assert.NotNil(T, restored)
+		assert.Equal(T, "new foo", restored.Foo)
+		assert.Equal(T, "bar2", restored.Bar)
+		assert.Equal(T, "baz2", restored.Baz)
+	})
+
 }
 
 
