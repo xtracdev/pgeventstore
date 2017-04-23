@@ -97,7 +97,7 @@ func (pg *PGEventStore) writeEvents(agg *goes.Aggregate) error {
 	if pg.publish {
 		log.Println("create publish statement")
 		var pubstmtErr error
-		pubStmt, pubstmtErr = tx.Prepare("insert into es.t_aepb_publish (aggregate_id, version) values ($1, $2)")
+		pubStmt, pubstmtErr = tx.Prepare("insert into es.t_aepb_publish (aggregate_id, version, typecode, payload) values ($1, $2, $3, $4)")
 		if pubstmtErr != nil {
 			return pubstmtErr
 		}
@@ -121,7 +121,7 @@ func (pg *PGEventStore) writeEvents(agg *goes.Aggregate) error {
 
 		if pg.publish {
 			log.Println("execute publish statement")
-			_, puberr := pubStmt.Exec(agg.AggregateID, e.Version)
+			_, puberr := pubStmt.Exec(agg.AggregateID, e.Version, e.TypeCode, eventBytes)
 			if puberr != nil {
 				log.Println(puberr.Error())
 				return ErrPubInsert

@@ -114,10 +114,14 @@ func init() {
 			return
 		}
 
-		var count int = -1
-		err = pgdb.DB.QueryRow("select count(*) from es.t_aepb_publish where aggregate_id = $1 and version = $2", testAgg2.AggregateID, testAgg2.Version).Scan(&count)
+		var payload []byte
+		var typecode string
+
+		err = pgdb.DB.QueryRow("select  typecode, payload from es.t_aepb_publish where aggregate_id = $1 and version = $2",
+			testAgg2.AggregateID, testAgg2.Version).Scan(&typecode,&payload)
 		if assert.Nil(T, err) {
-			assert.Equal(T, 1, count)
+			assert.Equal(T, "TACRE", typecode)
+			assert.True(T, len(payload) > 0)
 		}
 	})
 
