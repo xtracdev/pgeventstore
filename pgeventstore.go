@@ -44,7 +44,7 @@ func NewPGEventStore(db *sql.DB) (*PGEventStore, error) {
 
 
 func (es *PGEventStore) GetMaxVersionForAggregate(aggId string) (*int, error) {
-	row, err := es.db.Query("select max(version) from es.t_aeev_events where aggregate_id = $1", aggId)
+	row, err := es.db.Query("select max(version) from t_aeev_events where aggregate_id = $1", aggId)
 	if err != nil {
 		return nil, err
 	}
@@ -88,7 +88,7 @@ func (pg *PGEventStore) writeEvents(agg *goes.Aggregate) error {
 	defer tx.Rollback()
 
 	log.Println("create statement")
-	stmt, err := tx.Prepare("insert into es.t_aeev_events (aggregate_id, version, typecode, payload) values ($1, $2, $3, $4)")
+	stmt, err := tx.Prepare("insert into t_aeev_events (aggregate_id, version, typecode, payload) values ($1, $2, $3, $4)")
 	if err != nil {
 		return err
 	}
@@ -97,7 +97,7 @@ func (pg *PGEventStore) writeEvents(agg *goes.Aggregate) error {
 	if pg.publish {
 		log.Println("create publish statement")
 		var pubstmtErr error
-		pubStmt, pubstmtErr = tx.Prepare("insert into es.t_aepb_publish (aggregate_id, version, typecode, payload) values ($1, $2, $3, $4)")
+		pubStmt, pubstmtErr = tx.Prepare("insert into t_aepb_publish (aggregate_id, version, typecode, payload) values ($1, $2, $3, $4)")
 		if pubstmtErr != nil {
 			return pubstmtErr
 		}
@@ -147,7 +147,7 @@ func (ps *PGEventStore) RetrieveEvents(aggID string) ([]goes.Event, error) {
 	var events []goes.Event
 
 	//Select the events, ordered by version
-	rows, err := ps.db.Query(`select version, typecode, payload from es.t_aeev_events where aggregate_id = $1 order by version`, aggID)
+	rows, err := ps.db.Query(`select version, typecode, payload from t_aeev_events where aggregate_id = $1 order by version`, aggID)
 	if err != nil {
 		return nil, err
 	}

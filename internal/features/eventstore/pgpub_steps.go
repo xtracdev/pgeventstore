@@ -64,7 +64,7 @@ func init() {
 
 		var count int = -1
 		log.Infof("looking for publish of agg %s version %d", testAgg.AggregateID, testAgg.Version)
-		err = pgdb.DB.QueryRow("select count(*) from es.t_aepb_publish where aggregate_id = $1 and version = $2", testAgg.AggregateID, testAgg.Version).Scan(&count)
+		err = pgdb.DB.QueryRow("select count(*) from t_aepb_publish where aggregate_id = $1 and version = $2", testAgg.AggregateID, testAgg.Version).Scan(&count)
 		if err != nil {
 			log.Infof("Error querying for published events: %s", err.Error())
 		}
@@ -117,7 +117,7 @@ func init() {
 		var payload []byte
 		var typecode string
 
-		err = pgdb.DB.QueryRow("select  typecode, payload from es.t_aepb_publish where aggregate_id = $1 and version = $2",
+		err = pgdb.DB.QueryRow("select  typecode, payload from t_aepb_publish where aggregate_id = $1 and version = $2",
 			testAgg2.AggregateID, testAgg2.Version).Scan(&typecode,&payload)
 		if assert.Nil(T, err) {
 			assert.Equal(T, "TACRE", typecode)
