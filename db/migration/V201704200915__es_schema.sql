@@ -22,3 +22,8 @@ CREATE TABLE IF NOT EXISTS t_aepb_publish(
 WITH (
     OIDS=FALSE
 );
+
+
+CREATE TABLE IF NOT EXISTS t_aepl_publock(
+    id bigserial
+);
