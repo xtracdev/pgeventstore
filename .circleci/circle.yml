@@ -1,0 +1,24 @@
+version: 2
+jobs:
+  build:
+    working_directory: /go/src/github.com/xtracdev/pgeventstore
+    docker:
+      - image: golang:1.8.1-onbuild
+      - image: postgres:9.6.2
+        environment:
+          POSTGRES_PASSWORD: password
+
+    steps:
+      - checkout
+      - run: go get -v -t
+      - run: go test
+      - run: go get github.com/gucumber/gucumber/cmd/gucumber
+      - run:
+          name: integration-tests
+          environment:
+            DB_USER: postgres
+            DB_PASSWORD: password
+            DB_HOST: localhost
+            DB_PORT: 5432
+            DB_NAME: postgres
+          command: gucumber
