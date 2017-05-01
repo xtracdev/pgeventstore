@@ -3,6 +3,8 @@
 Event store using Postgres as the storage engine, ported (back) from
 oraeventstore.
 
+[![CircleCI](https://circleci.com/gh/xtracdev/pgeventstore.svg?style=svg)](https://circleci.com/gh/xtracdev/pgeventstore)
+
 ## Database Set Up
 
 For the database set up, we assume the availability of a database user who can create schema
