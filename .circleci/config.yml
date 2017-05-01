@@ -11,6 +11,7 @@ jobs:
     steps:
       - checkout
       - run: go get -v -t
+      - run: go get github.com/golang/protobuf/proto
       - run: go test
       - run: go get github.com/gucumber/gucumber/cmd/gucumber
       - run:
