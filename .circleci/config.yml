@@ -3,7 +3,7 @@ jobs:
   build:
     working_directory: /go/src/github.com/xtracdev/pgeventstore
     docker:
-      - image: golang:1.8.1-onbuild
+#      - image: golang:1.8.1-onbuild
       - image: postgres:9.6.2
         environment:
           POSTGRES_PASSWORD: password
