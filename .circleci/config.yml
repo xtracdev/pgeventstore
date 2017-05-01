@@ -43,4 +43,5 @@ jobs:
             echo "fire up gucumber"
             gucumber
 
-# Next - try second job to seed db
+# To do - do we need to have the integration test idle until the
+# schema has been created?
