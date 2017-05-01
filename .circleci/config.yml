@@ -8,6 +8,11 @@ jobs:
         environment:
           POSTGRES_PASSWORD: password
       - image: xtracdev/pgflywayseed
+        DB_HOST: localhost
+        DB_PORT: 5432
+        USER: portgres
+        PASSWORK: password
+        URL: jdbc:postgresql://localhost:5432/postgres
 
     steps:
       - checkout
