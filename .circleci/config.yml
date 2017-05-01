@@ -12,7 +12,7 @@ jobs:
           DB_HOST: localhost
           DB_PORT: 5432
           USER: postgres
-          PASSWORK: password
+          PASSWORD: password
           URL: jdbc:postgresql://localhost:5432/postgres
 
     steps:
