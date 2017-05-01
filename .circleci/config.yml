@@ -13,7 +13,12 @@ jobs:
       - run: go get -v -t
       - run: go get github.com/golang/protobuf/proto
       - run: go test
-      - run: go get github.com/gucumber/gucumber/cmd/gucumber
+      - run:
+        name: integration-test-deps
+        command: |
+          go get github.com/gucumber/gucumber/cmd/gucumber
+          go get github.com/stretchr/testify/assert
+          go get github.com/xtracdev/pgconn
       - run:
           name: integration-tests
           environment:
