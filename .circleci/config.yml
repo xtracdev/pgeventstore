@@ -22,7 +22,7 @@ jobs:
       - run:
           name: install-schema
           command: |
-            docker run -v $PWD/db:/fwmnt xtracdev/flyway:4.0.3 -user=postgres -password=password -locations=filesystem:/fwmnt/migration -configFile=/fwmnt/flyway.conf
+            java -version
       - run:
           name: integration-tests
           environment:
