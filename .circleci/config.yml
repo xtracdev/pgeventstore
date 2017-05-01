@@ -7,7 +7,7 @@ jobs:
       - image: postgres:9.6.2
         environment:
           POSTGRES_PASSWORD: password
-      - image: openjdk:8-jdk
+      - image: xtracdev/pgflywayseed
 
     steps:
       - checkout
@@ -33,3 +33,5 @@ jobs:
             DB_PORT: 5432
             DB_NAME: postgres
           command: gucumber
+
+# Next - try second job to seed db
