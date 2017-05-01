@@ -27,6 +27,10 @@ jobs:
             go get github.com/stretchr/testify/assert
             go get github.com/xtracdev/pgconn
       - run:
+          name: install-schema
+          command: |
+            sleep 10
+      - run:
           name: integration-tests
           environment:
             DB_USER: postgres
