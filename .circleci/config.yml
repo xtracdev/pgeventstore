@@ -12,7 +12,7 @@ jobs:
           DB_HOST: localhost
           DB_PORT: 5432
           USER: postgres
-          PASSWORD: password
+          PASSWORK: password
           URL: jdbc:postgresql://localhost:5432/postgres
 
     steps:
@@ -30,6 +30,7 @@ jobs:
           name: install-schema
           command: |
             sleep 10
+            echo "delay finished"
       - run:
           name: integration-tests
           environment:
@@ -38,6 +39,8 @@ jobs:
             DB_HOST: localhost
             DB_PORT: 5432
             DB_NAME: postgres
-          command: gucumber
+          command: |
+            echo "fire up gucumber"
+            gucumber
 
 # Next - try second job to seed db
