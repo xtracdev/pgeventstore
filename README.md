@@ -30,6 +30,9 @@ actual data from the event store table, do something with it (publish it
 to a queue, write out CQRS query views, etc), then delete the record from the
 publish table.
 
+Consider the use of the [pgpublish](https://github.com/xtracdev/pgpublish) project
+which publishes records written to the publich table to an AWS SNS topic.
+
 
 ## Dependencies
 
