@@ -1,19 +1,21 @@
 package eventstore
 
 import (
+	log "github.com/Sirupsen/logrus"
 	. "github.com/gucumber/gucumber"
 	"github.com/stretchr/testify/assert"
-	"strings"
-	"os"
-	"github.com/xtracdev/pgeventstore"
-	log "github.com/Sirupsen/logrus"
-	"github.com/xtracdev/pgconn"
 	. "github.com/xtracdev/goes/sample/testagg"
+	"github.com/xtracdev/pgconn"
+	"github.com/xtracdev/pgeventstore"
+	"os"
+	"strings"
 )
 
 func init() {
 	var eventStore *pgeventstore.PGEventStore
 	var testAgg, testAgg2 *TestAgg
+	var currentPublished int
+	var eventCount int
 
 	Given(`^an evironment with event publishing disabled$`, func() {
 		if len(configErrors) != 0 {
@@ -26,9 +28,9 @@ func init() {
 
 	When(`^I store an aggregate$`, func() {
 		var err error
-		connectString := pgconn.BuildConnectString(DBUser,DBPassword,DBHost,DBPort,DBName)
+		connectString := pgconn.BuildConnectString(DBUser, DBPassword, DBHost, DBPort, DBName)
 
-		pgdb,err := pgconn.OpenAndConnect(connectString, 3)
+		pgdb, err := pgconn.OpenAndConnect(connectString, 3)
 		if !assert.Nil(T, err) {
 			return
 		}
@@ -55,9 +57,9 @@ func init() {
 
 	Then(`^no events are written to the publish table$`, func() {
 		var err error
-		connectString := pgconn.BuildConnectString(DBUser,DBPassword,DBHost,DBPort,DBName)
+		connectString := pgconn.BuildConnectString(DBUser, DBPassword, DBHost, DBPort, DBName)
 
-		pgdb,err := pgconn.OpenAndConnect(connectString, 3)
+		pgdb, err := pgconn.OpenAndConnect(connectString, 3)
 		if !assert.Nil(T, err) {
 			return
 		}
@@ -84,9 +86,9 @@ func init() {
 
 	When(`^I store a new aggregate$`, func() {
 		var err error
-		connectString := pgconn.BuildConnectString(DBUser,DBPassword,DBHost,DBPort,DBName)
+		connectString := pgconn.BuildConnectString(DBUser, DBPassword, DBHost, DBPort, DBName)
 
-		pgdb,err := pgconn.OpenAndConnect(connectString, 3)
+		pgdb, err := pgconn.OpenAndConnect(connectString, 3)
 		if !assert.Nil(T, err) {
 			return
 		}
@@ -107,9 +109,9 @@ func init() {
 
 	Then(`^the events are written to the publish table$`, func() {
 		var err error
-		connectString := pgconn.BuildConnectString(DBUser,DBPassword,DBHost,DBPort,DBName)
+		connectString := pgconn.BuildConnectString(DBUser, DBPassword, DBHost, DBPort, DBName)
 
-		pgdb,err := pgconn.OpenAndConnect(connectString, 3)
+		pgdb, err := pgconn.OpenAndConnect(connectString, 3)
 		if !assert.Nil(T, err) {
 			return
 		}
@@ -118,12 +120,63 @@ func init() {
 		var typecode string
 
 		err = pgdb.DB.QueryRow("select  typecode, payload from t_aepb_publish where aggregate_id = $1 and version = $2",
-			testAgg2.AggregateID, testAgg2.Version).Scan(&typecode,&payload)
+			testAgg2.AggregateID, testAgg2.Version).Scan(&typecode, &payload)
 		if assert.Nil(T, err) {
 			assert.Equal(T, "TACRE", typecode)
 			assert.True(T, len(payload) > 0)
 		}
 	})
 
-}
+	When(`^I republish the events$`, func() {
+		var err error
+		connectString := pgconn.BuildConnectString(DBUser, DBPassword, DBHost, DBPort, DBName)
 
+		pgdb, err := pgconn.OpenAndConnect(connectString, 3)
+		if !assert.Nil(T, err) {
+			return
+		}
+
+		var publishRecords int
+		err = pgdb.DB.QueryRow("select  count(*) from t_aepb_publish").Scan(&publishRecords)
+
+		if !assert.Nil(T, err) {
+			return
+		}
+
+		var eventRecords int
+		err = pgdb.DB.QueryRow("select  count(*) from t_aeev_events").Scan(&eventRecords)
+
+		if !assert.Nil(T, err) {
+			return
+		}
+
+		currentPublished = publishRecords
+		eventCount = eventRecords
+
+		err = eventStore.RepublishAllEvents()
+		if !assert.Nil(T, err) {
+			return
+		}
+
+	})
+
+	Then(`^all the events are written to the publish table$`, func() {
+		var err error
+		connectString := pgconn.BuildConnectString(DBUser, DBPassword, DBHost, DBPort, DBName)
+
+		pgdb, err := pgconn.OpenAndConnect(connectString, 3)
+		if !assert.Nil(T, err) {
+			return
+		}
+
+		var publishRecords int
+		err = pgdb.DB.QueryRow("select  count(*) from t_aepb_publish").Scan(&publishRecords)
+
+		if !assert.Nil(T, err) {
+			return
+		}
+
+		assert.Equal(T, eventCount, publishRecords)
+	})
+
+}
