@@ -1,0 +1,42 @@
+{
+  "family": "repub",
+  "containerDefinitions": [
+    {
+      "name": "repub",
+      "image": "<your repo base uri>/<your org>/repub",
+      "cpu": 128,
+      "memory": 128,
+      "essential": true,
+      "environment": [
+        {
+          "name": "DB_USER",
+          "value": "<your db user>"
+        },
+        {
+          "name": "DB_PASSWORD",
+          "value": "<your password>"
+        },
+        {
+          "name": "DB_HOST",
+          "value": "<your database host>"
+        },
+        {
+          "name": "DB_PORT",
+          "value": "<your database port>"
+        },
+        {
+          "name": "DB_NAME",
+          "value": "<your database name>"
+        }
+      ],
+      "logConfiguration": {
+        "logDriver": "awslogs",
+        "options": {
+          "awslogs-group": "<your cluster log group>",
+          "awslogs-region":"<your region>",
+          "awslogs-stream-prefix": "repub"
+        }
+      }
+    }
+  ]
+}

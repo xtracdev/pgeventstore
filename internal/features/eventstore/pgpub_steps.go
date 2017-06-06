@@ -14,7 +14,6 @@ import (
 func init() {
 	var eventStore *pgeventstore.PGEventStore
 	var testAgg, testAgg2 *TestAgg
-	var currentPublished int
 	var eventCount int
 
 	Given(`^an evironment with event publishing disabled$`, func() {
@@ -136,13 +135,6 @@ func init() {
 			return
 		}
 
-		var publishRecords int
-		err = pgdb.DB.QueryRow("select  count(*) from t_aepb_publish").Scan(&publishRecords)
-
-		if !assert.Nil(T, err) {
-			return
-		}
-
 		var eventRecords int
 		err = pgdb.DB.QueryRow("select  count(*) from t_aeev_events").Scan(&eventRecords)
 
@@ -150,7 +142,6 @@ func init() {
 			return
 		}
 
-		currentPublished = publishRecords
 		eventCount = eventRecords
 
 		err = eventStore.RepublishAllEvents()

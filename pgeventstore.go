@@ -181,7 +181,7 @@ func (ps *PGEventStore) RepublishAllEvents() error {
 
 	var tx *sql.Tx = nil
 
-	log.Info("execute query")
+	log.Debug("execute query")
 	rows, err := ps.db.Query(`select event_time, aggregate_id, version, typecode, payload from t_aeev_events order by event_time`)
 	if err != nil {
 		return err
@@ -195,7 +195,7 @@ func (ps *PGEventStore) RepublishAllEvents() error {
 	var eventTime time.Time
 	var aggregateID string
 
-	log.Info("create transaction")
+	log.Debug("create transaction")
 
 	for rows.Next() {
 		tx, err = ps.db.Begin()
@@ -203,27 +203,28 @@ func (ps *PGEventStore) RepublishAllEvents() error {
 			return err
 		}
 
-		log.Info("scan row")
+		log.Debug("scan row")
 		rows.Scan(&eventTime, &aggregateID, &version, &typecode, &payload)
 
-		log.Info("insert row")
+		log.Debug("insert row")
+		log.Infof("Publishing %s %d - %v", aggregateID, version, eventTime)
 		_, err := tx.Exec(`insert into t_aepb_publish (event_time, aggregate_id, version, typecode, payload)  values($1,$2,$3,$4,$5)`,
 			eventTime, aggregateID, version, typecode, payload,
 		)
 
 		if err != nil {
 			pqError := err.(*pq.Error)
-			log.Infof("%v", pqError.Code.Name())
+			log.Debug("%v", pqError.Code.Name())
 			tx.Rollback()
 			if pqError.Code.Name() != "unique_violation" {
-				log.Info("rollback transaction")
+				log.Debug("rollback transaction")
 				return err
 			} else {
 				continue
 			}
 		}
 
-		log.Info("commit tx")
+		log.Debug("commit tx")
 		err = tx.Commit()
 		if err != nil {
 			tx.Rollback()
