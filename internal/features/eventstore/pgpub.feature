@@ -9,3 +9,8 @@ Feature: Event Publishing
     Given an environment with event publishing enabled
     When I store a new aggregate
     Then the events are written to the publish table
+
+  Scenario:
+    Given an environment with event publishing enabled
+    When I republish the events
+    Then all the events are written to the publish table

@@ -1,14 +1,14 @@
 package eventstore
 
 import (
+	log "github.com/Sirupsen/logrus"
 	. "github.com/gucumber/gucumber"
 	"github.com/stretchr/testify/assert"
-	"strings"
-	log "github.com/Sirupsen/logrus"
+	"github.com/xtracdev/goes"
+	. "github.com/xtracdev/goes/sample/testagg"
 	"github.com/xtracdev/pgconn"
 	"github.com/xtracdev/pgeventstore"
-	. "github.com/xtracdev/goes/sample/testagg"
-	"github.com/xtracdev/goes"
+	"strings"
 )
 
 func init() {
@@ -26,14 +26,14 @@ func init() {
 		}
 
 		log.Info("create event store")
-		connectString := pgconn.BuildConnectString(DBUser,DBPassword,DBHost,DBPort,DBName)
+		connectString := pgconn.BuildConnectString(DBUser, DBPassword, DBHost, DBPort, DBName)
 
-		pgdb,err := pgconn.OpenAndConnect(connectString, 3)
+		pgdb, err := pgconn.OpenAndConnect(connectString, 3)
 		if !assert.Nil(T, err) {
 			return
 		}
 
-		eventStore,_ = pgeventstore.NewPGEventStore(pgdb.DB)
+		eventStore, _ = pgeventstore.NewPGEventStore(pgdb.DB)
 		if assert.NotNil(T, eventStore) {
 			var err error
 			testAgg, err = NewTestAgg("new foo", "new bar", "new baz")
@@ -123,5 +123,3 @@ func init() {
 	})
 
 }
-
-
