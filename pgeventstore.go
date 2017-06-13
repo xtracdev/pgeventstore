@@ -3,11 +3,12 @@ package pgeventstore
 import (
 	"database/sql"
 	"errors"
+	"os"
+	"time"
+
 	log "github.com/Sirupsen/logrus"
 	"github.com/lib/pq"
 	"github.com/xtracdev/goes"
-	"os"
-	"time"
 )
 
 const (
@@ -49,6 +50,7 @@ func (es *PGEventStore) GetMaxVersionForAggregate(aggId string) (*int, error) {
 	if err != nil {
 		return nil, err
 	}
+	defer row.Close()
 
 	var max int
 	row.Scan(&max)
