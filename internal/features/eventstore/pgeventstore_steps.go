@@ -26,14 +26,13 @@ func init() {
 		}
 
 		log.Info("create event store")
-		connectString := pgconn.BuildConnectString(DBUser, DBPassword, DBHost, DBPort, DBName)
 
-		pgdb, err := pgconn.OpenAndConnect(connectString, 3)
+		pgdb, err := pgconn.OpenAndConnect(testEnv, 3)
 		if !assert.Nil(T, err) {
 			return
 		}
 
-		eventStore, _ = pgeventstore.NewPGEventStore(pgdb.DB)
+		eventStore, _ = pgeventstore.NewPGEventStore(pgdb.DB, false)
 		if assert.NotNil(T, eventStore) {
 			var err error
 			testAgg, err = NewTestAgg("new foo", "new bar", "new baz")

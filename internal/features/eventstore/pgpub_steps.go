@@ -7,7 +7,6 @@ import (
 	. "github.com/xtracdev/goes/sample/testagg"
 	"github.com/xtracdev/pgconn"
 	"github.com/xtracdev/pgeventstore"
-	"os"
 	"strings"
 )
 
@@ -22,18 +21,16 @@ func init() {
 			return
 		}
 
-		os.Setenv(pgeventstore.EventPublishEnvVar, "0")
 	})
 
 	When(`^I store an aggregate$`, func() {
 		var err error
-		connectString := pgconn.BuildConnectString(DBUser, DBPassword, DBHost, DBPort, DBName)
 
-		pgdb, err := pgconn.OpenAndConnect(connectString, 3)
+		pgdb, err := pgconn.OpenAndConnect(testEnv, 3)
 		if !assert.Nil(T, err) {
 			return
 		}
-		eventStore, err = pgeventstore.NewPGEventStore(pgdb.DB)
+		eventStore, err = pgeventstore.NewPGEventStore(pgdb.DB, false)
 		if err != nil {
 			log.Infof("Error connecting to oracle: %s", err.Error())
 		}
@@ -56,9 +53,8 @@ func init() {
 
 	Then(`^no events are written to the publish table$`, func() {
 		var err error
-		connectString := pgconn.BuildConnectString(DBUser, DBPassword, DBHost, DBPort, DBName)
 
-		pgdb, err := pgconn.OpenAndConnect(connectString, 3)
+		pgdb, err := pgconn.OpenAndConnect(testEnv, 3)
 		if !assert.Nil(T, err) {
 			return
 		}
@@ -79,19 +75,16 @@ func init() {
 			assert.Fail(T, strings.Join(configErrors, "\n"))
 			return
 		}
-
-		os.Setenv(pgeventstore.EventPublishEnvVar, "1")
 	})
 
 	When(`^I store a new aggregate$`, func() {
 		var err error
-		connectString := pgconn.BuildConnectString(DBUser, DBPassword, DBHost, DBPort, DBName)
 
-		pgdb, err := pgconn.OpenAndConnect(connectString, 3)
+		pgdb, err := pgconn.OpenAndConnect(testEnv, 3)
 		if !assert.Nil(T, err) {
 			return
 		}
-		eventStore, err = pgeventstore.NewPGEventStore(pgdb.DB)
+		eventStore, err = pgeventstore.NewPGEventStore(pgdb.DB, true)
 		if err != nil {
 			log.Infof("Error connecting to oracle: %s", err.Error())
 		}
@@ -108,9 +101,8 @@ func init() {
 
 	Then(`^the events are written to the publish table$`, func() {
 		var err error
-		connectString := pgconn.BuildConnectString(DBUser, DBPassword, DBHost, DBPort, DBName)
 
-		pgdb, err := pgconn.OpenAndConnect(connectString, 3)
+		pgdb, err := pgconn.OpenAndConnect(testEnv, 3)
 		if !assert.Nil(T, err) {
 			return
 		}
@@ -128,9 +120,8 @@ func init() {
 
 	When(`^I republish the events$`, func() {
 		var err error
-		connectString := pgconn.BuildConnectString(DBUser, DBPassword, DBHost, DBPort, DBName)
 
-		pgdb, err := pgconn.OpenAndConnect(connectString, 3)
+		pgdb, err := pgconn.OpenAndConnect(testEnv, 3)
 		if !assert.Nil(T, err) {
 			return
 		}
@@ -153,9 +144,8 @@ func init() {
 
 	Then(`^all the events are written to the publish table$`, func() {
 		var err error
-		connectString := pgconn.BuildConnectString(DBUser, DBPassword, DBHost, DBPort, DBName)
 
-		pgdb, err := pgconn.OpenAndConnect(connectString, 3)
+		pgdb, err := pgconn.OpenAndConnect(testEnv, 3)
 		if !assert.Nil(T, err) {
 			return
 		}

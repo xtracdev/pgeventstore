@@ -3,17 +3,12 @@ package pgeventstore
 import (
 	"database/sql"
 	"errors"
-	"os"
 	"time"
-
 	log "github.com/Sirupsen/logrus"
 	"github.com/lib/pq"
 	"github.com/xtracdev/goes"
 )
 
-const (
-	EventPublishEnvVar = "ES_PUBLISH_EVENTS"
-)
 
 var (
 	ErrConcurrency = errors.New("Concurrency Exception")
@@ -27,21 +22,19 @@ type PGEventStore struct {
 	publish bool
 }
 
-func NewPGEventStore(db *sql.DB) (*PGEventStore, error) {
+func NewPGEventStore(db *sql.DB, enableEventPublishing bool) (*PGEventStore, error) {
 	log.Infof("Creating event store...")
-	publishEvents := os.Getenv(EventPublishEnvVar)
-	switch publishEvents {
-	case "1":
+	switch enableEventPublishing {
+	case true:
 		log.Info("Event store configured to write records to publish table")
 	default:
-		log.Info("Event store will not write records to publish table - export ",
-			EventPublishEnvVar, "= 1 to enable writing to publish table")
+		log.Info("Event store will not write records to publish table.")
 
 	}
 
 	return &PGEventStore{
 		db:      db,
-		publish: publishEvents == "1",
+		publish: enableEventPublishing,
 	}, nil
 }
 
