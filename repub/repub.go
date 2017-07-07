@@ -1,10 +1,10 @@
 package main
 
 import (
-	"github.com/xtracdev/pgconn"
-	"log"
-	"github.com/xtracdev/pgeventstore"
 	"github.com/xtracdev/envinject"
+	"github.com/xtracdev/pgconn"
+	"github.com/xtracdev/pgeventstore"
+	"log"
 )
 
 func main() {

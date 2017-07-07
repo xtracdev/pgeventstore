@@ -3,12 +3,11 @@ package pgeventstore
 import (
 	"database/sql"
 	"errors"
-	"time"
 	log "github.com/Sirupsen/logrus"
 	"github.com/lib/pq"
 	"github.com/xtracdev/goes"
+	"time"
 )
-
 
 var (
 	// ErrConcurrency is produced when version conflicts arise from uncoordinated write occur
@@ -18,7 +17,7 @@ var (
 	// ErrEventInsert is produced when there's an error inserting into the events table
 	ErrEventInsert = errors.New("Error inserting record into events table")
 	// ErrPubInsert is oridyced when there's an error inserting into the publish table
-	ErrPubInsert   = errors.New("Error inserting record into pub table")
+	ErrPubInsert = errors.New("Error inserting record into pub table")
 )
 
 // PGEventStore is the type encapsulating event store functionality implemented using Postgres

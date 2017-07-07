@@ -2,8 +2,8 @@ package eventstore
 
 import (
 	. "github.com/gucumber/gucumber"
-	"os"
 	"github.com/xtracdev/envinject"
+	"os"
 )
 
 var testEnv *envinject.InjectedEnv
