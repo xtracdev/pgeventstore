@@ -1,26 +1,24 @@
 package main
 
 import (
+	"github.com/xtracdev/envinject"
 	"github.com/xtracdev/pgconn"
-	"log"
-	"os"
 	"github.com/xtracdev/pgeventstore"
+	"log"
 )
 
 func main() {
-	eventConfig, err := pgconn.NewEnvConfig()
+	env, err := envinject.NewInjectedEnv()
 	if err != nil {
 		log.Fatal(err.Error())
 	}
 
-	pgdb, err := pgconn.OpenAndConnect(eventConfig.ConnectString(), 3)
+	pgdb, err := pgconn.OpenAndConnect(env, 3)
 	if err != nil {
 		log.Fatal(err.Error())
 	}
 
-	os.Setenv("ES_PUBLISH_EVENTS", "1")
-
-	eventStore, err := pgeventstore.NewPGEventStore(pgdb.DB)
+	eventStore, err := pgeventstore.NewPGEventStore(pgdb.DB, true)
 	if err != nil {
 		log.Fatal(err.Error())
 	}

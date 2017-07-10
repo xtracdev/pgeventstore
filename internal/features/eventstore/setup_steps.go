@@ -2,14 +2,11 @@ package eventstore
 
 import (
 	. "github.com/gucumber/gucumber"
+	"github.com/xtracdev/envinject"
 	"os"
 )
 
-var DBUser string
-var DBPassword string
-var DBHost string
-var DBPort string
-var DBName string
+var testEnv *envinject.InjectedEnv
 var configErrors []string
 
 func init() {
@@ -20,31 +17,12 @@ func init() {
 	})
 
 	GlobalContext.BeforeAll(func() {
-		DBUser = os.Getenv("DB_USER")
-		if DBUser == "" {
-			configErrors = append(configErrors, "Configuration missing DB_USER env variable")
+		os.Unsetenv(envinject.ParamPrefixEnvVar)
+		var err error
+		testEnv, err = envinject.NewInjectedEnv()
+		if err != nil {
+			configErrors = append(configErrors, err.Error())
 		}
-
-		DBPassword = os.Getenv("DB_PASSWORD")
-		if DBPassword == "" {
-			configErrors = append(configErrors, "Configuration missing DB_PASSWORD env variable")
-		}
-
-		DBHost = os.Getenv("DB_HOST")
-		if DBHost == "" {
-			configErrors = append(configErrors, "Configuration missing DB_HOST env variable")
-		}
-
-		DBPort = os.Getenv("DB_PORT")
-		if DBPort == "" {
-			configErrors = append(configErrors, "Configuration missing DB_PORT env variable")
-		}
-
-		DBName = os.Getenv("DB_NAME")
-		if DBName == "" {
-			configErrors = append(configErrors, "Configuration missing DB_NAME env variable")
-		}
-
 	})
 
 }
