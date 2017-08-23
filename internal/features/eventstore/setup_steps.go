@@ -17,7 +17,7 @@ func init() {
 	})
 
 	GlobalContext.BeforeAll(func() {
-		os.Unsetenv(envinject.ParamPrefixEnvVar)
+		os.Unsetenv(envinject.ParamPathEnvVar)
 		var err error
 		testEnv, err = envinject.NewInjectedEnv()
 		if err != nil {
